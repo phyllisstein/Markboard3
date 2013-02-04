@@ -45,7 +45,7 @@ class MarkboardCopyFormattedCommand(sublime_plugin.TextCommand):
         except Exception as e:
             err("Exception: " + str(e))
 
-        return output.startswith("pandoc")
+        return output.startswith("pandoc".encode("utf-8"))
 
     def run(self, edit):
         plat = sublime.platform()
