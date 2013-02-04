@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "Markboard: Copy Rich Text",
+        "command": "markboard_copy_formatted"
+    }
+]

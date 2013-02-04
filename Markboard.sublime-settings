@@ -1,0 +1,6 @@
+{
+    // If you wish to use Pandoc, you should probably specify
+    // its installation path, as it's often not found by
+    // Sublime.
+    "pandoc_path": "/usr/local/bin",
+}

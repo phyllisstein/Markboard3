@@ -1,0 +1,22 @@
+# Markboard3 for Sublime Text 3
+Markboard3 is a quick-and-dirty **OS X--only** plugin for [Sublime Text 3](http://sublimetext.com/3) that processes a Markdown document and copies the output to the clipboard as rich text. Its target audience is that Venn slice of people whom both WYSIWYG editors and completely raw text cause to twitch, who enjoy the expressive force of an emphasized word but also the austerity of a monospaced buffer, who would sooner part with their typing fingers than their typesetting systems but compromise their staunchness each and every time they want to italicize a book title in an e-mail. To these people, Markboard is proudly dedicated. Go forth and WYG no more.
+
+
+## Installation
+Due to Sublime 3's move to a custom Python interpreter, Markboard now requires [Pandoc][] and several external libraries included in this distribution's "Support" directory. To set up Markboard, install Pandoc, then extract the four folders and two files from `Support/PyObjC.zip` and copy them directly to the root level of your Sublime Text 3 "Packages" directory (`~/Library/Application Support/Sublime Text 3/Packcages/`). These files are slight modifications of [PyObjC](http://pyobjc.sourceforge.net) and inbuilt Python modules altered to run correctly within Sublime Text 3.[^1]
+
+If you install Pandoc to a directory other than the default, please change the `pandoc_path` setting in `Markbaord.sublime-settings` so that the package can find it.
+
+
+## Usage
+Just press `Ctrl+Alt+c` in any Markdown document, switch to a rich-text editor, and paste. You can also select specific parts of your Markdown source for processing; if there are multiple selections, they'll be strung together with two newlines between them and copied as a unit.
+
+
+## Limitations
+Markboard3 will only run on Mac OS X.
+
+
+
+[^1]: However, be aware that the Sublime interpreter will occasionally return errors on loading the modules, usually along the lines of `__name__ is undefined`. This will not affect either Sublime's performance or this package's.
+
+[pandoc]: http://johnmacfarlane.net/pandoc/

@@ -1,0 +1,6 @@
+[
+    {
+        "keys": ["ctrl+alt+c"],
+        "command": "markboard_copy_formatted"
+    }
+]
