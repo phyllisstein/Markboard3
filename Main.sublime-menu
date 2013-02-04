@@ -18,7 +18,7 @@
                             {
                                 "command": "open_file", "args":
                                 {
-                                    "file": "${packages}/Markboard/README.mdown"
+                                    "file": "${packages}/Markboard3/README.mdown"
                                 },
                                 "caption": "README"
                             },
@@ -28,7 +28,7 @@
                             {
                                 "command": "open_file", "args":
                                 {
-                                    "file": "${packages}/Markboard/Markboard.sublime-settings"
+                                    "file": "${packages}/Markboard3/Markboard.sublime-settings"
                                 },
                                 "caption": "Settings – Default"
                             },
