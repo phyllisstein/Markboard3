@@ -3,7 +3,9 @@ Markboard3 is a quick-and-dirty **OS X--only** plugin for [Sublime Text 3](http:
 
 
 ## Installation
-Due to Sublime 3's move to a custom Python interpreter, Markboard now requires [Pandoc][] and several external libraries included in this distribution's "Support" directory. To set up Markboard, install Pandoc, then extract the four folders and two files from `Support/PyObjC.zip` and copy them directly to the root level of your Sublime Text 3 "Packages" directory (`~/Library/Application Support/Sublime Text 3/Packcages/`). These files are slight modifications of [PyObjC](http://pyobjc.sourceforge.net) and inbuilt Python modules altered to run correctly within Sublime Text 3.[^1]
+Due to Sublime 3's move to a custom Python interpreter, Markboard now requires [Pandoc][]. To set up Markboard, install Pandoc, then download the git repository. You can use the "ZIP" link above, or, in your Sublime Text 3 packages directory, enter this command:
+
+    git clone git://github.com/phyllisstein/Markboard3.git
 
 If you install Pandoc to a directory other than the default, please change the `pandoc_path` setting in `Markbaord.sublime-settings` so that the package can find it.
 
@@ -13,10 +15,8 @@ Just press `Ctrl+Alt+c` in any Markdown document, switch to a rich-text editor, 
 
 
 ## Limitations
-Markboard3 will only run on Mac OS X.
+* Markboard3 will only run on Mac OS X.
+* Trying to copy formatted text within a few seconds after opening Sublime will sometimes fail.
 
-
-
-[^1]: However, be aware that the Sublime interpreter will occasionally return errors on loading the modules, usually along the lines of `__name__ is undefined`. This will not affect either Sublime's performance or this package's.
 
 [pandoc]: http://johnmacfarlane.net/pandoc/

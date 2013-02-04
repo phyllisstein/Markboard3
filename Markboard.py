@@ -1,42 +1,32 @@
-'''
-    Grateful thanks to the following people for their work, which constitutes the bricks of this
-    little script:
-        * Trent Mick, author of python-markdown2 (https://github.com/trentm/python-markdown2),
-          which processes the Markdown;
-        * Phillip Piper, who wrote the snippet that interacts with the clipboard under Windows; and
-        * "Clark," whose guide explained the proper way to use the Foundation and AppKit libraries
-          to access OS X's clipboard.
-    I can't blame anyone but myself for the gtk scripting, which is as yet untested and likely to be
-    less than impeccable; nor for the code's mortar, which largely ditto.
-                                                    ---Daniel Shannon, d@daniel.sh, http://daniel.sh
+#coding=utf-8
 
-        OS X docs: http://www.libertypages.com/clarktech/?p=3299
-     Windows docs: http://code.activestate.com/recipes/474121-getting-html-from-the-windows-clipboard/
-       Linux docs: http://www.pygtk.org/docs/pygtk/class-gtkclipboard.html#method-gtkclipboard--store
-                   http://developer.gnome.org/gtkmm/stable/classGtk_1_1Clipboard.html
-                   http://stackoverflow.com/questions/1992869/how-to-paste-html-to-clipboard-with-gtk
-                   http://gtk.php.net/manual/en/gtk.enum.targetflags.php
-'''
-
-import codecs
 import os
+import codecs
 import tempfile
 import threading
 import subprocess
 import sublime
 import sublime_plugin
-import Markboard3.MarkboardClippers
+try:
+    from Foundation import *
+    from AppKit import *
+except ImportError:
+    Markboard3.Markboard = reload(Markboard3.Markboard)
 
 
 def err(theError):
     print("[Markboard: " + theError + "]")
 
 
-class MarkboardCopyFormattedCommand(sublime_plugin.TextCommand):
+class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
     def is_enabled(self):
-        multimarkdown = self.view.score_selector(0, "text.html.multimarkdown") > 0
-        markdown = self.view.score_selector(0, "text.html.markdown") > 0
+        scope = sublime.active_window().active_view().scope_name(0)
+        multimarkdown = sublime.score_selector(scope, "text.html.multimarkdown") > 0
+        markdown = sublime.score_selector(scope, "text.html.markdown") > 0
         return multimarkdown or markdown
+
+    def is_visible(self):
+        return self.is_enabled()
 
     def checkPandoc(self, env):
         cmd = ['pandoc', '--version']
@@ -47,7 +37,7 @@ class MarkboardCopyFormattedCommand(sublime_plugin.TextCommand):
 
         return output.startswith("pandoc".encode("utf-8"))
 
-    def run(self, edit):
+    def run(self):
         plat = sublime.platform()
         if plat == "windows":
             sublime.status_message("Windows is unsupported under Sublime 3")
@@ -62,6 +52,8 @@ class MarkboardCopyFormattedCommand(sublime_plugin.TextCommand):
         if not self.checkPandoc(env):
             sublime.status_message("Markboard requires Pandoc")
             return
+
+        self.view = sublime.active_window().active_view()
 
         selections = self.view.sel()
         threads = []
@@ -90,7 +82,7 @@ class MarkboardCopyFormattedCommand(sublime_plugin.TextCommand):
             f.write(normalString + "\n\n")
             f.close()
 
-        newThread = MarkboardPandocMarkdownProcessor(writer, self.view.window(), env)
+        newThread = MarkboardPandocMarkdownProcessor(writer, env)
         threads.append(newThread)
         newThread.start()
 
@@ -119,6 +111,7 @@ class MarkboardCopyFormattedCommand(sublime_plugin.TextCommand):
 
             sublime.set_timeout(lambda: self.manageThreads(theThreads, offset, i, direction), 100)
             return
+
         clipObject = self.clipboardCopy()
         if clipObject:
             self.view.erase_status("markboard")
@@ -139,7 +132,10 @@ class MarkboardCopyFormattedCommand(sublime_plugin.TextCommand):
     def clipboardCopy(self):
         plat = sublime.platform()
         if plat == "osx":
-            return Markboard3.MarkboardClippers.OSXClipObject(self.runningThreadBuffer)
+            pasteboard = NSPasteboard.generalPasteboard()
+            typeArray = NSArray.arrayWithObject_(NSHTMLPboardType)
+            pasteboard.declareTypes_owner_(typeArray, None)
+            return pasteboard.setString_forType_(self.runningThreadBuffer, NSHTMLPboardType)
         if plat == "windows":
             self.view.erase_status("markboard")
             sublime.status_message("Windows is unsupported under Sublime 3")
@@ -151,10 +147,9 @@ class MarkboardCopyFormattedCommand(sublime_plugin.TextCommand):
 
 
 class MarkboardPandocMarkdownProcessor(threading.Thread):
-    def __init__(self, theFilename, theWindow, env):
+    def __init__(self, theFilename, env):
         self.myFilename = theFilename
         self.result = None
-        self.window = theWindow
         self.env = env
         threading.Thread.__init__(self)
 
