@@ -7,6 +7,9 @@ import threading
 import subprocess
 import sublime
 import sublime_plugin
+import sys
+PyObjCpath = os.path.join(os.path.dirname(__file__), "PyObjC")
+sys.path.insert(0, PyObjCpath)
 try:
     from Foundation import *
     from AppKit import *
