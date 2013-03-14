@@ -1,0 +1,20 @@
+{
+    "schema_version": "1.2",
+    "packages": [
+        {
+            "name": "Markboard3",
+            "description": "Copy formatted text from Markdown under OS X and ST3",
+            "author": "phyllisstein",
+            "homepage": "https://github.com/phyllisstein/Markboard3",
+            "last_modified": "2013-03-14 02:20:00",
+            "platforms": {
+                "osx": [
+                    {
+                        "version": "1.0.0",
+                        "url": "https://nodeload.github.com/phyllisstein/Markboard3/zip/1.0.0"
+                    }
+                ]
+            }
+        }
+    ]
+}
