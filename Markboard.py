@@ -119,9 +119,6 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
         if clipObject:
             self.view.erase_status("markboard")
             sublime.status_message("Formatted text copied.")
-        else:
-            self.view.erase_status("markboard")
-            sublime.status_message("Fatal error formatting text.")
 
     def normalize_line_endings(self, string):
         string = string.replace('\r\n', '\n').replace('\r', '\n')

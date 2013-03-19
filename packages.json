@@ -10,8 +10,8 @@
             "platforms": {
                 "osx": [
                     {
-                        "version": "1.0.0",
-                        "url": "https://nodeload.github.com/phyllisstein/Markboard3/zip/1.0.0"
+                        "version": "1.0.1",
+                        "url": "https://nodeload.github.com/phyllisstein/Markboard3/zip/1.0.1"
                     }
                 ]
             }
