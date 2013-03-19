@@ -161,7 +161,7 @@ class MarkboardPandocMarkdownProcessor(threading.Thread):
         outFile = f.name
         f.close()
         markdownFrom = "--from=markdown"
-        cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, markdownFrom, '--to=html', '--smart', '--normalize']
+        cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, markdownFrom, '--to=html', '--smart', '--normalize', '--email-obfuscation=none']
         try:
             subprocess.call(cmd, env=self.env)
         except Exception as e:
