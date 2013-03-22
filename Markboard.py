@@ -9,7 +9,8 @@ import sublime
 import sublime_plugin
 import sys
 PyObjCpath = os.path.join(os.path.dirname(__file__), "PyObjC")
-sys.path.insert(0, PyObjCpath)
+if not PyObjCpath in sys.path:
+    sys.path.insert(0, PyObjCpath)
 try:
     from Foundation import *
     from AppKit import *
