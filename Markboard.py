@@ -159,7 +159,8 @@ class MarkboardPandocMarkdownProcessor(threading.Thread):
         outFile = f.name
         f.close()
         markdownFrom = "--from=markdown"
-        cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, markdownFrom, '--to=html', '--smart', '--normalize', '--email-obfuscation=none']
+        templatePath = os.path.join(sublime.packages_path(), "Markboard3", ".template-empty.html")
+        cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, markdownFrom, '--to=html', '--smart', '--normalize', '--email-obfuscation=none', '--template=%s' % templatePath]
         try:
             subprocess.call(cmd, env=self.env)
         except Exception as e:
