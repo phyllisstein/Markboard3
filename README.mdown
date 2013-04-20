@@ -3,7 +3,7 @@ Markboard3 is a quick-and-dirty **OS X--only** plugin for [Sublime Text 3](http:
 
 
 ## Installation
-Due to Sublime 3's move to a custom Python interpreter, Markboard now requires [Pandoc][]. To set up Markboard, install Pandoc, then download the git repository. You can use the "ZIP" link above, or, in your Sublime Text 3 packages directory, enter this command:
+Due to Sublime 3's move to a custom Python interpreter, Markboard now requires [Pandoc][]. Once Pandoc is installed, you can find Markboard3 in the [Sublime Package Control](http://wbond.net/sublime_packages/package_control/installation) database. Just enter `⌘+⇧+P` to bring up the Command Palette, search for "Package Control: Install Package," and search the list of packages for "Markboard3." You can also use the "ZIP" link above, or, in your Sublime Text 3 packages directory, enter this command:
 
     git clone git://github.com/phyllisstein/Markboard3.git
 
