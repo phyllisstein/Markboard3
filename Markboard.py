@@ -9,12 +9,7 @@ import sublime
 import sublime_plugin
 import sys
 
-do_import = True
-for p in sys.path:
-    if "PyObjC" in p:
-        do_import = False
-        break
-if do_import and "sublime-package" in __file__:
+if "sublime-package" in __file__:
     import zipfile
     import shutil
     package_path, _ = os.path.split(__file__)
@@ -31,7 +26,7 @@ if do_import and "sublime-package" in __file__:
                 with src, trg:
                     shutil.copyfileobj(src, trg)
     sys.path.insert(0, os.path.join(cache_path, "PyObjC"))
-elif do_import and not "sublime-package" in __file__:
+else:
     script_dir = os.path.dirname(__file__)
     pyobjc_path = os.path.join(script_dir, "PyObjC")
     sys.path.insert(0, pyobjc_path)
