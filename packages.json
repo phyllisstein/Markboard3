@@ -6,12 +6,12 @@
             "description": "Copy formatted text from Markdown under OS X and ST3",
             "author": "phyllisstein",
             "homepage": "https://github.com/phyllisstein/Markboard3",
-            "last_modified": "2013-04-19 23:02:00",
+            "last_modified": "2013-06-06 21:02:00",
             "platforms": {
                 "osx": [
                     {
-                        "version": "1.0.1",
-                        "url": "https://nodeload.github.com/phyllisstein/Markboard3/zip/1.0.1"
+                        "version": "1.0.2",
+                        "url": "https://nodeload.github.com/phyllisstein/Markboard3/zip/1.0.2"
                     }
                 ]
             }
