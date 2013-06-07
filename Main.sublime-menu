@@ -16,9 +16,9 @@
                         "children":
                         [
                             {
-                                "command": "open_file", "args":
+                                "command": "markboard_display_defaults", "args":
                                 {
-                                    "file": "${packages}/Markboard3/README.mdown"
+                                    "fn": "README.mdown"
                                 },
                                 "caption": "README"
                             },
@@ -26,9 +26,9 @@
                                 "caption": "-"
                             },
                             {
-                                "command": "open_file", "args":
+                                "command": "markboard_display_defaults", "args":
                                 {
-                                    "file": "${packages}/Markboard3/Markboard.sublime-settings"
+                                    "fn": "Markboard.sublime-settings"
                                 },
                                 "caption": "Settings – Default"
                             },

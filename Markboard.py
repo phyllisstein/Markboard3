@@ -8,14 +8,39 @@ import subprocess
 import sublime
 import sublime_plugin
 import sys
-PyObjCpath = os.path.join(os.path.dirname(__file__), "PyObjC")
-if not PyObjCpath in sys.path:
-    sys.path.insert(0, PyObjCpath)
+
+do_import = True
+for p in sys.path:
+    if "PyObjC" in p:
+        do_import = False
+        break
+if do_import and "sublime-package" in __file__:
+    import zipfile
+    import shutil
+    package_path, _ = os.path.split(__file__)
+    cache_path = tempfile.mkdtemp()
+    with zipfile.ZipFile(package_path) as z:
+        for m in z.namelist():
+            m_dir, m_base = os.path.split(m)
+            if "PyObjC" in m and m_base:
+                src = z.open(m)
+                dirtree = os.path.join(cache_path, m_dir)
+                if not os.path.exists(dirtree):
+                    os.makedirs(dirtree)
+                trg = open(os.path.join(cache_path, m), "wb")
+                with src, trg:
+                    shutil.copyfileobj(src, trg)
+    sys.path.insert(0, os.path.join(cache_path, "PyObjC"))
+elif do_import and not "sublime-package" in __file__:
+    script_dir = os.path.dirname(__file__)
+    pyobjc_path = os.path.join(script_dir, "PyObjC")
+    sys.path.insert(0, pyobjc_path)
 try:
     from Foundation import *
     from AppKit import *
-except ImportError:
-    Markboard3.Markboard = reload(Markboard3.Markboard)
+except ImportError as e:
+    print("[Markboard3: Failed to copy PyObjC module with exception:]")
+    print("[{e}]".format(e=e))
 
 
 def err(theError):
@@ -158,9 +183,13 @@ class MarkboardPandocMarkdownProcessor(threading.Thread):
         f = tempfile.NamedTemporaryFile(mode="w+", suffix=".html", delete=False)
         outFile = f.name
         f.close()
-        markdownFrom = "--from=markdown"
-        templatePath = os.path.join(sublime.packages_path(), "Markboard3", ".template-empty.html")
-        cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, markdownFrom, '--to=html', '--smart', '--normalize', '--email-obfuscation=none', '--template=%s' % templatePath]
+        g = tempfile.NamedTemporaryFile(mode="w+", suffix=".html", delete=False)
+        empty_template = sublime.load_resource("Packages/Markboard3/.template-empty.html")
+        g.write(empty_template)
+        g.close()
+        cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, '--from=markdown',
+               '--to=html', '--smart', '--normalize', '--email-obfuscation=none',
+               '--template=%s' % g.name]
         try:
             subprocess.call(cmd, env=self.env)
         except Exception as e:
