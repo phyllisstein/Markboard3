@@ -9,34 +9,6 @@ import sublime
 import sublime_plugin
 import sys
 
-if "sublime-package" in __file__:
-    import zipfile
-    import shutil
-    package_path, _ = os.path.split(__file__)
-    cache_path = tempfile.mkdtemp()
-    with zipfile.ZipFile(package_path) as z:
-        for m in z.namelist():
-            m_dir, m_base = os.path.split(m)
-            if "PyObjC" in m and m_base:
-                src = z.open(m)
-                dirtree = os.path.join(cache_path, m_dir)
-                if not os.path.exists(dirtree):
-                    os.makedirs(dirtree)
-                trg = open(os.path.join(cache_path, m), "wb")
-                with src, trg:
-                    shutil.copyfileobj(src, trg)
-    sys.path.insert(0, os.path.join(cache_path, "PyObjC"))
-else:
-    script_dir = os.path.dirname(__file__)
-    pyobjc_path = os.path.join(script_dir, "PyObjC")
-    sys.path.insert(0, pyobjc_path)
-try:
-    from Foundation import *
-    from AppKit import *
-except ImportError as e:
-    print("[Markboard3: Failed to copy PyObjC module with exception:]")
-    print("[{e}]".format(e=e))
-
 
 def err(theError):
     print("[Markboard: " + theError + "]")
@@ -70,10 +42,10 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
             sublime.status_message("Linux is unsupported under Sublime 3")
             return
 
-        env = os.environ.copy()
-        env['PATH'] = env['PATH'] + ":" + sublime.load_settings("Markboard.sublime-settings").get("pandoc_path", "/usr/local/bin")
+        self.env = os.environ.copy()
+        self.env['PATH'] = self.env['PATH'] + ":" + sublime.load_settings("Markboard.sublime-settings").get("pandoc_path", "/usr/local/bin")
 
-        if not self.checkPandoc(env):
+        if not self.checkPandoc(self.env):
             sublime.status_message("Markboard requires Pandoc")
             return
 
@@ -106,7 +78,7 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
             f.write(normalString + "\n\n")
             f.close()
 
-        newThread = MarkboardPandocMarkdownProcessor(writer, env)
+        newThread = MarkboardPandocMarkdownProcessor(writer, self.env)
         threads.append(newThread)
         newThread.start()
 
@@ -153,18 +125,55 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
     def clipboardCopy(self):
         plat = sublime.platform()
         if plat == "osx":
+            if "sublime-package" in __file__:
+                import zipfile
+                import shutil
+                package_path, _ = os.path.split(__file__)
+                cache_path = tempfile.mkdtemp()
+                with zipfile.ZipFile(package_path) as z:
+                    for m in z.namelist():
+                        m_dir, m_base = os.path.split(m)
+                        if "PyObjC" in m and m_base:
+                            src = z.open(m)
+                            dirtree = os.path.join(cache_path, m_dir)
+                            if not os.path.exists(dirtree):
+                                os.makedirs(dirtree)
+                            trg = open(os.path.join(cache_path, m), "wb")
+                            with src, trg:
+                                shutil.copyfileobj(src, trg)
+                sys.path.insert(0, os.path.join(cache_path, "PyObjC"))
+            else:
+                script_dir = os.path.dirname(__file__)
+                pyobjc_path = os.path.join(script_dir, "PyObjC")
+                sys.path.insert(0, pyobjc_path)
+            try:
+                from Foundation import *
+                from AppKit import *
+            except ImportError as e:
+                print("[Markboard3: Failed to copy PyObjC module with exception:]")
+                print("[{e}]".format(e=e))
+
             pasteboard = NSPasteboard.generalPasteboard()
             typeArray = NSArray.arrayWithObject_(NSHTMLPboardType)
             pasteboard.declareTypes_owner_(typeArray, None)
             return pasteboard.setString_forType_(self.runningThreadBuffer, NSHTMLPboardType)
         if plat == "windows":
-            self.view.erase_status("markboard")
-            sublime.status_message("Windows is unsupported under Sublime 3")
-            return None
+            import Markboard3.markboard_winclip as winc
+
+            wc = winc.MarkboardWinClipper(self.runningThreadBuffer)
+            return wc.copy_html()
         if plat == "linux":
-            self.view.erase_status("markboard")
-            sublime.status_message("Linux is unsupported under Sublime 3")
-            return None
+            final_file = tempfile.NamedTemporaryFile(suffix=".html", mode="w+", delete=False)
+            final_file.write(self.runningThreadBuffer)
+            final_file.close()
+            cmd = ['xclip', '-i', final_file.name, '-selection', 'clipboard',
+                    '-t', 'text/html']
+            try:
+                subprocess.check_call(cmd, env=self.env)
+            except CalledProcessError as e:
+                err("Call to xclip failed with exception: {e}".format(e=e))
+                return False
+            return True
 
 
 class MarkboardPandocMarkdownProcessor(threading.Thread):

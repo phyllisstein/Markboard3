@@ -1,5 +1,8 @@
+# Now Hear This
+Markboard3 is now testing experimental compatibility with Windows and Linux as well as OS X. Please feel free to test away and report any issues on the appropriate Github pages.
+
 # Markboard3 for Sublime Text 3
-Markboard3 is a quick-and-dirty **OS X--only** plugin for [Sublime Text 3](http://sublimetext.com/3) that processes a Markdown document and copies the output to the clipboard as rich text. Its target audience is that Venn slice of people whom both WYSIWYG editors and completely raw text cause to twitch, who enjoy the expressive force of an emphasized word but also the austerity of a monospaced buffer, who would sooner part with their typing fingers than their typesetting systems but compromise their staunchness each and every time they want to italicize a book title in an e-mail. To these people, Markboard is proudly dedicated. Go forth and WYG no more.
+Markboard3 is a quick-and-dirty plugin for [Sublime Text 3](http://sublimetext.com/3) that processes a Markdown document and copies the output to the clipboard as rich text. Its target audience is that Venn slice of people whom both WYSIWYG editors and completely raw text cause to twitch, who enjoy the expressive force of an emphasized word but also the austerity of a monospaced buffer, who would sooner part with their typing fingers than their typesetting systems but compromise their staunchness each and every time they want to italicize a book title in an e-mail. To these people, Markboard is proudly dedicated. Go forth and WYG no more.
 
 
 ## Installation
