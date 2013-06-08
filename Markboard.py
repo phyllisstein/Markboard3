@@ -8,6 +8,9 @@ import subprocess
 import sublime
 import sublime_plugin
 import sys
+import shutil
+
+PYOBJC_PATH = None
 
 
 def err(theError):
@@ -127,9 +130,10 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
         if plat == "osx":
             if "sublime-package" in __file__:
                 import zipfile
-                import shutil
                 package_path, _ = os.path.split(__file__)
                 cache_path = tempfile.mkdtemp()
+                global PYOBJC_PATH
+                PYOBJC_PATH = cache_path
                 with zipfile.ZipFile(package_path) as z:
                     for m in z.namelist():
                         m_dir, m_base = os.path.split(m)
@@ -144,8 +148,8 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
                 sys.path.insert(0, os.path.join(cache_path, "PyObjC"))
             else:
                 script_dir = os.path.dirname(__file__)
-                pyobjc_path = os.path.join(script_dir, "PyObjC")
-                sys.path.insert(0, pyobjc_path)
+                module_path = os.path.join(script_dir, "PyObjC")
+                sys.path.insert(0, module_path)
             try:
                 from Foundation import *
                 from AppKit import *
@@ -203,3 +207,7 @@ class MarkboardPandocMarkdownProcessor(threading.Thread):
             f = codecs.open(outFile, "r", "utf-8")
             self.result = f.read()
             f.close()
+
+def plugin_unloaded():
+    if PYOBJC_PATH:
+        shutil.rmtree(PYOBJC_PATH)
