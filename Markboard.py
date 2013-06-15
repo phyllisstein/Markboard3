@@ -151,16 +151,16 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
                 module_path = os.path.join(script_dir, "PyObjC")
                 sys.path.insert(0, module_path)
             try:
-                from Foundation import *
-                from AppKit import *
+                import Foundation
+                import AppKit
             except ImportError as e:
                 print("[Markboard3: Failed to copy PyObjC module with exception:]")
                 print("[{e}]".format(e=e))
 
-            pasteboard = NSPasteboard.generalPasteboard()
-            typeArray = NSArray.arrayWithObject_(NSHTMLPboardType)
+            pasteboard = AppKit.NSPasteboard.generalPasteboard()
+            typeArray = Foundation.NSArray.arrayWithObject_(AppKit.NSHTMLPboardType)
             pasteboard.declareTypes_owner_(typeArray, None)
-            return pasteboard.setString_forType_(self.runningThreadBuffer, NSHTMLPboardType)
+            return pasteboard.setString_forType_(self.runningThreadBuffer, AppKit.NSHTMLPboardType)
         if plat == "windows":
             import Markboard3.markboard_winclip as winc
 
@@ -174,7 +174,7 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
                     '-t', 'text/html']
             try:
                 subprocess.check_call(cmd, env=self.env)
-            except CalledProcessError as e:
+            except subprocess.CalledProcessError as e:
                 err("Call to xclip failed with exception: {e}".format(e=e))
                 return False
             return True

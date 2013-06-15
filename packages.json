@@ -6,12 +6,12 @@
             "description": "Copy formatted text from Markdown under ST3",
             "author": "phyllisstein",
             "homepage": "https://github.com/phyllisstein/Markboard3",
-            "last_modified": "2013-06-08 11:26:00",
+            "last_modified": "2013-06-15 09:23:00",
             "platforms": {
                 "*": [
                     {
-                        "version": "2.0.1",
-                        "url": "https://nodeload.github.com/phyllisstein/Markboard3/zip/2.0.1"
+                        "version": "2.0.2",
+                        "url": "https://nodeload.github.com/phyllisstein/Markboard3/zip/2.0.2"
                     }
                 ]
             }
