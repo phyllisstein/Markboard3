@@ -38,15 +38,12 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
 
     def run(self):
         plat = sublime.platform()
-        if plat == "windows":
-            sublime.status_message("Windows is unsupported under Sublime 3")
-            return
-        if plat == "linux":
-            sublime.status_message("Linux is unsupported under Sublime 3")
-            return
 
         self.env = os.environ.copy()
-        self.env['PATH'] = self.env['PATH'] + ":" + sublime.load_settings("Markboard.sublime-settings").get("pandoc_path", "/usr/local/bin")
+        if plat == "osx" or plat == "linux":
+            self.env['PATH'] = self.env['PATH'] + ":" + sublime.load_settings("Markboard.sublime-settings").get("pandoc_path", "/usr/local/bin")
+        else:
+            self.env['PATH'] = self.env['PATH'] + ";" + sublime.load_settings("Markboard.sublime-settings").get("pandoc_path", "C:\\Program Files\\")
 
         if not self.checkPandoc(self.env):
             sublime.status_message("Markboard requires Pandoc")
