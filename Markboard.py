@@ -192,7 +192,7 @@ class MarkboardPandocMarkdownProcessor(threading.Thread):
         outFile = f.name
         f.close()
         g = tempfile.NamedTemporaryFile(mode="w+", suffix=".html", delete=False)
-        empty_template = sublime.load_resource("Packages/Markboard3/.template-empty.html")
+        empty_template = sublime.load_resource("Packages/Markboard3/template-empty.html")
         g.write(empty_template)
         g.close()
         cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, '--from=markdown',

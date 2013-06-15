@@ -1,14 +1,17 @@
-import ctypes
+try:
+    import ctypes
 
-strcpy = ctypes.cdll.msvcrt.strcpy
-OpenClipboard = ctypes.windll.user32.OpenClipboard
-EmptyClipboard = ctypes.windll.user32.EmptyClipboard
-SetClipboardData = ctypes.windll.user32.SetClipboardData
-CloseClipboard = ctypes.windll.user32.CloseClipboard
-GlobalAlloc = ctypes.windll.kernel32.GlobalAlloc
-GlobalLock = ctypes.windll.kernel32.GlobalLock
-GlobalUnlock = ctypes.windll.kernel32.GlobalUnlock
-GMEM_DDESHARE = 0x2000
+    strcpy = ctypes.cdll.msvcrt.strcpy
+    OpenClipboard = ctypes.windll.user32.OpenClipboard
+    EmptyClipboard = ctypes.windll.user32.EmptyClipboard
+    SetClipboardData = ctypes.windll.user32.SetClipboardData
+    CloseClipboard = ctypes.windll.user32.CloseClipboard
+    GlobalAlloc = ctypes.windll.kernel32.GlobalAlloc
+    GlobalLock = ctypes.windll.kernel32.GlobalLock
+    GlobalUnlock = ctypes.windll.kernel32.GlobalUnlock
+    GMEM_DDESHARE = 0x2000
+except (ImportError, OSError) as e:
+    pass
 
 
 class MarkboardWinClipper():
