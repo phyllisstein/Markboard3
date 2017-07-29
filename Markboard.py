@@ -192,14 +192,14 @@ class MarkboardPandocMarkdownProcessor(threading.Thread):
         empty_template = sublime.load_resource("Packages/Markboard3/template-empty.html")
         g.write(empty_template)
         g.close()
-        md = 'markdown+hard_line_breaks+intraword_underscores+strikeout+superscript+\
-              subscript+inline_code_attributes+all_symbols_escapable+yaml_metadata_block+\
-              pipe_tables+grid_tables+multiline_tables+table_captions+simple_tables+\
-              example_lists+definition_lists+startnum+fancy_lists+fenced_code_attributes+\
-              fenced_code_blocks+backtick_code_blocks+blank_before_blockquote+\
-              implicit_header_references+auto_identifiers+header_attribuets+\
-              blank_before_header+escaped_line_breaks'
-        cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, '--from=%s' % md,
+        md = ['markdown', 'hard_line_breaks', 'intraword_underscores', 'strikeout', 'superscript',
+            'subscript', 'inline_code_attributes', 'all_symbols_escapable', 'yaml_metadata_block',
+            'pipe_tables', 'grid_tables', 'multiline_tables', 'table_captions', 'simple_tables',
+            'example_lists', 'definition_lists', 'startnum', 'fancy_lists', 'fenced_code_attributes',
+            'fenced_code_blocks', 'backtick_code_blocks', 'blank_before_blockquote',
+            'implicit_header_references', 'auto_identifiers', 'header_attributes',
+            'blank_before_header', 'escaped_line_breaks']
+        cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, '--from=%s' % '+'.join(md),
                '--to=html5', '--smart', '--normalize', '--email-obfuscation=none',
                '--template=%s' % g.name]
         try:
