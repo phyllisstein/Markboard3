@@ -198,10 +198,12 @@ class MarkboardPandocMarkdownProcessor(threading.Thread):
             'example_lists', 'definition_lists', 'startnum', 'fancy_lists', 'fenced_code_attributes',
             'fenced_code_blocks', 'backtick_code_blocks', 'blank_before_blockquote',
             'implicit_header_references', 'auto_identifiers', 'header_attributes',
-            'blank_before_header', 'escaped_line_breaks']
+            'blank_before_header', 'escaped_line_breaks', 'smart']
         cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, '--from=%s' % '+'.join(md),
-               '--to=html5', '--smart', '--normalize', '--email-obfuscation=none',
+               '--to=html5', '--email-obfuscation=none',
                '--template=%s' % g.name]
+        print(' '.join(cmd))
+
         try:
             subprocess.call(cmd, env=self.env)
         except Exception as e:
