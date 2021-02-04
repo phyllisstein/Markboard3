@@ -5,6 +5,7 @@ import codecs
 import tempfile
 import threading
 import subprocess
+from subprocess import Popen, PIPE
 import sublime
 import sublime_plugin
 import sys
@@ -42,6 +43,7 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
         self.env = os.environ.copy()
         if plat == "osx" or plat == "linux":
             self.env['PATH'] = self.env['PATH'] + ":" + sublime.load_settings("Markboard.sublime-settings").get("pandoc_path", "/usr/local/bin")
+            self.env['PATH'] = self.env['PATH'] + ":" + sublime.load_settings("Markboard.sublime-settings").get("pp_path", "{}/.local/bin".format(self.env['HOME']))
         else:
             self.env['PATH'] = self.env['PATH'] + ";" + sublime.load_settings("Markboard.sublime-settings").get("pandoc_path", "C:\\Program Files\\")
 
@@ -157,7 +159,7 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
             pasteboard = AppKit.NSPasteboard.generalPasteboard()
             typeArray = Foundation.NSArray.arrayWithObject_(AppKit.NSHTMLPboardType)
             pasteboard.declareTypes_owner_(typeArray, None)
-            return pasteboard.setString_forType_(self.runningThreadBuffer, AppKit.NSHTMLPboardType)
+            return pasteboard.setString_forType_(str(self.runningThreadBuffer), AppKit.NSHTMLPboardType)
         if plat == "windows":
             import Markboard3.markboard_winclip as winc
 
@@ -192,21 +194,17 @@ class MarkboardPandocMarkdownProcessor(threading.Thread):
         empty_template = sublime.load_resource("Packages/Markboard3/template-empty.html")
         g.write(empty_template)
         g.close()
-        md = 'markdown+hard_line_breaks+intraword_underscores+strikeout+superscript+\
-              subscript+inline_code_attributes+all_symbols_escapable+yaml_metadata_block+\
-              pipe_tables+grid_tables+multiline_tables+table_captions+simple_tables+\
-              example_lists+definition_lists+startnum+fancy_lists+fenced_code_attributes+\
-              fenced_code_blocks+backtick_code_blocks+blank_before_blockquote+\
-              implicit_header_references+auto_identifiers+header_attribuets+\
-              blank_before_header+escaped_line_breaks'
-        cmd = ['pandoc', self.myFilename, '--output=%s' % outFile, '--from=%s' % md,
-               '--to=html5', '--smart', '--normalize', '--email-obfuscation=none',
-               '--template=%s' % g.name]
+
+        pandoc_output_md = 'markdown+emoji+yaml_metadata_block+bracketed_spans+smart'
+        pandoc_cmd = ['pandoc', '--output=%s' % outFile, '--from=%s' % pandoc_output_md,
+               '--to=html5', '--email-obfuscation=none', '--template=%s' % g.name]
+        pp_cmd = ['/Users/daniel/.local/bin/pp', self.myFilename]
+
         try:
-            subprocess.call(cmd, env=self.env)
+            with Popen(pp_cmd, stdout=PIPE) as pp:
+                subprocess.call(pandoc_cmd, env=self.env, stdin=pp.stdout)
         except Exception as e:
-            err("Exception: " + str(e))
-            self.result = False
+            err("Markdown processing failed: " + str(e))
         else:
             f = codecs.open(outFile, "r", "utf-8")
             self.result = f.read()
