@@ -11,8 +11,13 @@ import sublime_plugin
 import sys
 import shutil
 
-PYOBJC_PATH = None
+# script_dir = os.path.dirname(__file__)
+script_dir = "/Users/daniel/Library/ApplicationSupport/Sublime Text/Packages/Markboard3"
+module_path = os.path.join(script_dir, "PyObjC")
+sys.path.insert(2, os.path.join(module_path))
 
+import AppKit
+import Foundation
 
 def err(theError):
     print("[Markboard: " + theError + "]")
@@ -145,16 +150,7 @@ class MarkboardCopyFormattedCommand(sublime_plugin.ApplicationCommand):
                             with src, trg:
                                 shutil.copyfileobj(src, trg)
                 sys.path.insert(0, os.path.join(cache_path, "PyObjC"))
-            else:
-                script_dir = os.path.dirname(__file__)
-                module_path = os.path.join(script_dir, "PyObjC")
-                sys.path.insert(0, module_path)
-            try:
-                import Foundation
-                import AppKit
-            except ImportError as e:
-                print("[Markboard3: Failed to copy PyObjC module with exception:]")
-                print("[{e}]".format(e=e))
+                print(sys.path)
 
             pasteboard = AppKit.NSPasteboard.generalPasteboard()
             typeArray = Foundation.NSArray.arrayWithObject_(AppKit.NSHTMLPboardType)

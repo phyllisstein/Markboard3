@@ -6,6 +6,7 @@ can also be used manually.
 """
 import objc as _objc
 
+
 class object_lock(object):
     """
     A context manager that implements the same feature as
@@ -15,13 +16,14 @@ class object_lock(object):
     The mutex for object ``anObject`` is represented by
     ``objc.object_lock(anObject)``.
     """
+
     def __init__(self, value):
         self.__value = value
 
     def __enter__(self):
         _objc._objc_sync_enter(self.__value)
 
-    def __exit__(self, type, value, tp):
+    def __exit__(self, exc_type, value, tp):
         _objc._objc_sync_exit(self.__value)
 
     def lock(self):

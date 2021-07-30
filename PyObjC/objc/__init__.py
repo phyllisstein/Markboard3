@@ -3,60 +3,79 @@ Python <-> Objective-C bridge (PyObjC)
 
 This module defines the core interfaces of the Python<->Objective-C bridge.
 """
-import sys
+from . import _objc
+
+
+# Import the namespace from the _objc extension
+def _update(g):
+    for k in _objc.__dict__:
+        g.setdefault(k, getattr(_objc, k))
+
+
+_update(globals())
+del _update
+
+
+from ._convenience import *  # noqa: F401, F403, E402
+from ._convenience_nsobject import *  # noqa: F401, F403, E402
+from ._convenience_nsdecimal import *  # noqa: F401, F403, E402
+from ._convenience_nsdata import *  # noqa: F401, F403, E402
+from ._convenience_nsdictionary import *  # noqa: F401, F403, E402
+from ._convenience_nsset import *  # noqa: F401, F403, E402
+from ._convenience_nsarray import *  # noqa: F401, F403, E402
+from ._convenience_nsstring import *  # noqa: F401, F403, E402
+from ._convenience_mapping import *  # noqa: F401, F403, E402
+from ._convenience_sequence import *  # noqa: F401, F403, E402
+from ._bridgesupport import *  # noqa: F401, F403, E402
+from ._dyld import *  # noqa: F401, F403, E402
+from ._protocols import *  # noqa: F401, F403, E402
+from ._descriptors import *  # noqa: F401, F403, E402
+from ._category import *  # noqa: F401, F403, E402
+from ._bridges import *  # noqa: F401, F403, E402
+from ._pythonify import *  # noqa: F401, F403, E402
+from ._locking import *  # noqa: F401, F403, E402
+from ._context import *  # noqa: F401, F403, E402
+from ._properties import *  # noqa: F401, F403, E402
+from ._lazyimport import *  # noqa: F401, F403, E402
+from ._compat import *  # noqa: F401, F403, E402
+from . import _callable_docstr  # noqa: F401, F403, E402
+from . import _pycoder  # noqa: F401, F403, E402
+
+
+# Helper function for new-style metadata modules
+def _resolve_name(name):
+    if "." not in name:
+        raise ValueError(name)
+
+    module, name = name.rsplit(".", 1)
+    m = __import__(module)
+    for k in module.split(".")[1:]:
+        m = getattr(m, k)
+
+    return getattr(m, name)
+
+
+_NSAutoreleasePool = None
 
 # Aliases for some common Objective-C constants
 nil = None
 YES = True
 NO = False
 
-# Import the namespace from the _objc extension
-def _update(g=globals()):
 
-    # Dummy import of copy_reg, needed
-    # for py2app.
-    if sys.version_info[0] == 2:
-        import copy_reg
+class autorelease_pool(object):
+    """
+    A context manager that runs the body of the block with a fresh
+    autorelease pool. The actual release pool is not accessible.
+    """
 
-    import objc._objc as _objc
-    for k in _objc.__dict__:
-        g.setdefault(k, getattr(_objc, k))
-_update()
-del _update
+    def __init__(self):
+        global _NSAutoreleasePool
+        if _NSAutoreleasePool is None:
+            _NSAutoreleasePool = lookUpClass("NSAutoreleasePool")  # noqa: F405
 
-from objc._convenience import *
-from objc._bridgesupport import *
+    def __enter__(self):
+        self._pool = _NSAutoreleasePool.alloc().init()
 
-from objc._dyld import *
-from objc._protocols import *
-from objc._descriptors import *
-from objc._category import *
-from objc._bridges import *
-from objc._compat import *
-from objc._pythonify import *
-from objc._locking import *
-from objc._context import *
-from objc._properties import *
-from objc._lazyimport import *
-
-import objc._pycoder as _pycoder
-
-# Make sure our global autorelease pool is
-# recycled when the interpreter shuts down.
-# This avoids issue1402 in the python
-# bugtracker
-import atexit
-atexit.register(recycleAutoreleasePool)
-
-
-# Helper function for new-style metadata modules
-def _resolve_name(name):
-    if '.' not in name:
-        raise ValueError(name)
-
-    module, name = name.rsplit('.', 1)
-    m = __import__(module)
-    for k in module.split('.')[1:]:
-        m = getattr(m, k)
-
-    return getattr(m, name)
+    def __exit__(self, exc_type, value, tp):
+        del self._pool
